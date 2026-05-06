@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moveon.data.local.dao.UserPreferences
 import com.example.moveon.domain.model.User
+import com.example.moveon.domain.model.UserRole
 import com.example.moveon.domain.repository.AuthRepository
 import com.example.moveon.domain.repository.InventoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
     private val inventoryRepository: InventoryRepository,
+    private val authRepository: AuthRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -39,6 +41,17 @@ class SettingsViewModel @Inject constructor(
 
     init {
         loadSettings()
+        observeCurrentUserRole()
+    }
+
+    private fun observeCurrentUserRole() {
+        viewModelScope.launch {
+            authRepository.currentUser.collect { user ->
+                _uiState.value = _uiState.value.copy(
+                    currentUserRole = user?.role
+                )
+            }
+        }
     }
 
     fun setPushNotificationsEnabled(enabled: Boolean) {
@@ -79,9 +92,20 @@ class SettingsViewModel @Inject constructor(
 
     fun syncNow() {
         viewModelScope.launch {
-            userPreferences.setLastManualSyncAt(System.currentTimeMillis())
-            refreshStorageSummary()
-            _eventFlow.emit("Data synced locally")
+            val uid = authRepository.currentUser.first()?.id
+            if (uid.isNullOrBlank()) {
+                _eventFlow.emit("Sign in to sync inventory with Firebase")
+                return@launch
+            }
+            inventoryRepository.syncInventoryWithCloud(uid)
+                .onSuccess {
+                    userPreferences.setLastManualSyncAt(System.currentTimeMillis())
+                    refreshStorageSummary()
+                    _eventFlow.emit("Inventory synced with Firebase")
+                }
+                .onFailure { e ->
+                    _eventFlow.emit(e.message ?: "Could not sync inventory")
+                }
         }
     }
 
@@ -101,7 +125,7 @@ class SettingsViewModel @Inject constructor(
             val darkModeEnabled = userPreferences.isDarkModeEnabled()
             val autoSyncEnabled = userPreferences.isAutoSyncEnabled()
 
-            val totalBoxes = runCatching { inventoryRepository.getTotalBoxesCount() }.getOrDefault(0)
+            val totalBoxes = resolvedCachedBoxCount()
             val totalItems = runCatching { inventoryRepository.getTotalItemsCount().first() }.getOrDefault(0)
             val cacheSizeLabel = formatBytes(directorySize(context.cacheDir))
             val lastSyncLabel = userPreferences.getLastManualSyncAt()?.let(::formatTimestamp)
@@ -122,7 +146,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private suspend fun refreshStorageSummary() {
-        val totalBoxes = runCatching { inventoryRepository.getTotalBoxesCount() }.getOrDefault(0)
+        val totalBoxes = resolvedCachedBoxCount()
         val totalItems = runCatching { inventoryRepository.getTotalItemsCount().first() }.getOrDefault(0)
         val cacheSizeLabel = formatBytes(directorySize(context.cacheDir))
         val lastSyncLabel = userPreferences.getLastManualSyncAt()?.let(::formatTimestamp)
@@ -133,6 +157,11 @@ class SettingsViewModel @Inject constructor(
             cacheSizeLabel = cacheSizeLabel,
             lastSyncLabel = lastSyncLabel
         )
+    }
+
+    private suspend fun resolvedCachedBoxCount(): Int {
+        val uid = authRepository.currentUser.first()?.id ?: return 0
+        return runCatching { inventoryRepository.getTotalBoxesCountForOwner(uid) }.getOrDefault(0)
     }
 
     private fun clearCacheDirectory(directory: File) {
@@ -237,5 +266,6 @@ data class SettingsUiState(
     val offlineBoxesCount: Int = 0,
     val offlineItemsCount: Int = 0,
     val cacheSizeLabel: String = "0.0 MB",
-    val lastSyncLabel: String? = null
+    val lastSyncLabel: String? = null,
+    val currentUserRole: UserRole? = null
 )

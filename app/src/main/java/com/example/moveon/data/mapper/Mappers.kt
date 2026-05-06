@@ -17,6 +17,7 @@ fun UserDto.toDomainModel(): User = User(
     role = when (this.role) {
         "Provider" -> UserRole.PROVIDER
         "Driver" -> UserRole.DRIVER
+        "Admin" -> UserRole.ADMIN
         else -> UserRole.USER
     },
     createdAt = this.created_at,
@@ -32,6 +33,7 @@ fun User.toDto(): UserDto = UserDto(
     role = when (this.role) {
         UserRole.PROVIDER -> "Provider"
         UserRole.DRIVER -> "Driver"
+        UserRole.ADMIN -> "Admin"
         UserRole.USER -> "User"
     },
     created_at = this.createdAt,
@@ -47,6 +49,7 @@ fun UserSessionEntity.toDomainModel(): User = User(
     role = when (this.role) {
         "Provider" -> UserRole.PROVIDER
         "Driver" -> UserRole.DRIVER
+        "Admin" -> UserRole.ADMIN
         else -> UserRole.USER
     },
     createdAt = this.created_at,
@@ -62,6 +65,7 @@ fun User.toSessionEntity(): UserSessionEntity = UserSessionEntity(
     role = when (this.role) {
         UserRole.PROVIDER -> "Provider"
         UserRole.DRIVER -> "Driver"
+        UserRole.ADMIN -> "Admin"
         UserRole.USER -> "User"
     },
     created_at = this.createdAt,
@@ -232,7 +236,11 @@ fun BoxEntity.toDomainModel(): Box = Box(
     items = emptyList() // Populated separately
 )
 
-fun Box.toEntity(): BoxEntity = BoxEntity(
+fun Box.toEntity(
+    ownerUserId: String = "",
+    colorHex: String = BoxEntity.DEFAULT_BOX_COLOR_HEX,
+    pendingCloudUpload: Boolean = false
+): BoxEntity = BoxEntity(
     box_uuid = this.boxUuid,
     box_id = this.boxId,
     booking_id = this.bookingId,
@@ -240,7 +248,10 @@ fun Box.toEntity(): BoxEntity = BoxEntity(
     category = this.category,
     label = this.label,
     volume = this.volume,
-    packed = this.packed
+    packed = this.packed,
+    owner_user_id = ownerUserId,
+    color_hex = colorHex,
+    pending_cloud_upload = pendingCloudUpload
 )
 
 fun BoxDto.toDomainModel(): Box = Box(

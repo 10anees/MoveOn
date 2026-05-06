@@ -29,6 +29,7 @@ object AppModule {
             .addMigrations(MoveOnDatabase.MIGRATION_1_2)
             .addMigrations(MoveOnDatabase.MIGRATION_2_3)
             .addMigrations(MoveOnDatabase.MIGRATION_3_4)
+            .addMigrations(MoveOnDatabase.MIGRATION_4_5)
             .build()
     }
 
@@ -37,6 +38,10 @@ object AppModule {
 
     @Provides
     fun provideItemDao(database: MoveOnDatabase) = database.itemDao()
+
+    @Provides
+    fun provideInventoryPendingSyncDao(database: MoveOnDatabase) =
+        database.inventoryPendingSyncDao()
 
     @Provides
     fun provideUserSessionDao(database: MoveOnDatabase) = database.userSessionDao()
