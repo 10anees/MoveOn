@@ -29,8 +29,24 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.moveon.domain.model.UserRole
+import com.example.moveon.ui.navigation.navAdminShellArgument
+import com.example.moveon.ui.navigation.navChromeArguments
+import com.example.moveon.ui.navigation.navProviderShellArgument
+import com.example.moveon.ui.components.AdminDashboardTab
 import com.example.moveon.ui.components.DashboardTab
+import com.example.moveon.ui.navigation.NAV_ADMIN_SHELL
+import com.example.moveon.ui.navigation.NAV_PROVIDER_SHELL
+import com.example.moveon.ui.navigation.NAV_SELECT_ADMIN_TAB
+import com.example.moveon.ui.navigation.NavRoutes
+import com.example.moveon.ui.navigation.appSettingsRoute
+import com.example.moveon.ui.navigation.newPasswordRoute
+import com.example.moveon.ui.navigation.securityOtpRoute
+import com.example.moveon.ui.navigation.securityRoute
+import com.example.moveon.ui.navigation.securityUpdatedRoute
+import com.example.moveon.ui.navigation.verifyIdentityRoute
 import com.example.moveon.ui.components.MoveOnBottomBar
 import com.example.moveon.ui.components.ProviderDashboardTab
 import com.example.moveon.ui.components.PlaceholderFutureScreen
@@ -44,6 +60,7 @@ import com.example.moveon.ui.features.auth.ProviderSetupStepThreeScreen
 import com.example.moveon.ui.features.auth.ProviderSetupStepTwoScreen
 import com.example.moveon.ui.features.auth.RoleChooseScreen
 import com.example.moveon.ui.features.auth.SignUpScreen
+import com.example.moveon.ui.features.admin.AdminDashboardScreen
 import com.example.moveon.ui.features.book.BookScreen
 import com.example.moveon.ui.features.book.TrackBookingScreen
 import com.example.moveon.ui.features.home.HomeScreen
@@ -82,6 +99,32 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val authFlowViewModel: AuthFlowViewModel = viewModel()
 
+                val onProviderDashboardTab: (ProviderDashboardTab) -> Unit = { tab ->
+                    when (tab) {
+                        ProviderDashboardTab.Dashboard,
+                        ProviderDashboardTab.Fleet,
+                        ProviderDashboardTab.Drivers -> {
+                            navController.navigate(Screen.ProviderDashboard.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                        ProviderDashboardTab.Profile -> Unit
+                    }
+                }
+
+                val onAdminChromeTab: (AdminDashboardTab) -> Unit = { tab ->
+                    val key = when (tab) {
+                        AdminDashboardTab.Users -> "users"
+                        AdminDashboardTab.Providers -> "providers"
+                        AdminDashboardTab.Profile -> "profile"
+                    }
+                    kotlin.runCatching {
+                        navController.getBackStackEntry(Screen.AdminDashboard.route)
+                            .savedStateHandle[NAV_SELECT_ADMIN_TAB] = key
+                    }
+                    navController.popBackStack(Screen.AdminDashboard.route, inclusive = false)
+                }
+
                 val onTabSelected: (DashboardTab) -> Unit = { tab ->
                     val route = tab.route
                     val currentRoute = navController.currentBackStackEntry?.destination?.route
@@ -116,6 +159,7 @@ class MainActivity : ComponentActivity() {
 
                                 val targetRoute = when {
                                     role == UserRole.PROVIDER -> Screen.ProviderDashboard.route
+                                    role == UserRole.ADMIN -> Screen.AdminDashboard.route
                                     authViewModel.isUserLoggedIn() -> Screen.Home.route
                                     else -> Screen.Onboarding.route
                                 }
@@ -142,10 +186,10 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Login.route) {
                         LoginScreen(
                             onNavigateToHome = { role ->
-                                val destination = if (role == UserRole.PROVIDER) {
-                                    Screen.ProviderDashboard.route
-                                } else {
-                                    Screen.Home.route
+                                val destination = when (role) {
+                                    UserRole.PROVIDER -> Screen.ProviderDashboard.route
+                                    UserRole.ADMIN -> Screen.AdminDashboard.route
+                                    else -> Screen.Home.route
                                 }
                                 navController.navigate(destination) {
                                     popUpTo(Screen.Login.route) { inclusive = true }
@@ -156,7 +200,7 @@ class MainActivity : ComponentActivity() {
                             },
                             onForgotPassword = { email ->
                                 navController.currentBackStackEntry?.savedStateHandle?.set("forgot_email", email)
-                                navController.navigate(Screen.VerifyIdentity.route) {
+                                navController.navigate(verifyIdentityRoute(adminShell = false, providerShell = false)) {
                                     launchSingleTop = true
                                 }
                             }
@@ -174,10 +218,10 @@ class MainActivity : ComponentActivity() {
                             },
                             onNavigateToRoleChoose = { navController.navigate(Screen.RoleChoose.route) },
                             onNavigateToHome = { role ->
-                                val destination = if (role == UserRole.PROVIDER) {
-                                    Screen.ProviderDashboard.route
-                                } else {
-                                    Screen.Home.route
+                                val destination = when (role) {
+                                    UserRole.PROVIDER -> Screen.ProviderDashboard.route
+                                    UserRole.ADMIN -> Screen.AdminDashboard.route
+                                    else -> Screen.Home.route
                                 }
                                 navController.navigate(destination) {
                                     popUpTo(Screen.Login.route) { inclusive = true }
@@ -196,10 +240,10 @@ class MainActivity : ComponentActivity() {
                             authViewModel.eventFlow.collect { event ->
                                 when (event) {
                                     is AuthViewModel.UiEvent.NavigateToHome -> {
-                                        val destination = if (event.role == UserRole.PROVIDER) {
-                                            Screen.ProviderDashboard.route
-                                        } else {
-                                            Screen.Home.route
+                                        val destination = when (event.role) {
+                                            UserRole.PROVIDER -> Screen.ProviderDashboard.route
+                                            UserRole.ADMIN -> Screen.AdminDashboard.route
+                                            else -> Screen.Home.route
                                         }
                                         navController.navigate(destination) {
                                             popUpTo(Screen.Login.route) { inclusive = true }
@@ -277,10 +321,10 @@ class MainActivity : ComponentActivity() {
                             authViewModel.eventFlow.collect { event ->
                                 when (event) {
                                     is AuthViewModel.UiEvent.NavigateToHome -> {
-                                        val destination = if (event.role == UserRole.PROVIDER) {
-                                            Screen.ProviderDashboard.route
-                                        } else {
-                                            Screen.Home.route
+                                        val destination = when (event.role) {
+                                            UserRole.PROVIDER -> Screen.ProviderDashboard.route
+                                            UserRole.ADMIN -> Screen.AdminDashboard.route
+                                            else -> Screen.Home.route
                                         }
                                         navController.navigate(destination) {
                                             popUpTo(Screen.Login.route) { inclusive = true }
@@ -341,6 +385,27 @@ class MainActivity : ComponentActivity() {
                             onOpenProfile = {
                                 navController.navigate(Screen.ProviderProfile.route) {
                                     launchSingleTop = true
+                                }
+                            }
+                        )
+                    }
+
+                    composable(Screen.AdminDashboard.route) { adminEntry ->
+                        AdminDashboardScreen(
+                            tabSelectionHandle = adminEntry.savedStateHandle,
+                            onOpenSettings = {
+                                navController.navigate(appSettingsRoute(adminShell = true)) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            onLoggedOut = {
+                                navController.navigate(Screen.Login.route) {
+                                    popUpTo(navController.graph.id) {
+                                        inclusive = true
+                                        saveState = false
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = false
                                 }
                             }
                         )
@@ -461,7 +526,7 @@ class MainActivity : ComponentActivity() {
                         ProfileScreen(
                             onTabSelected = onTabSelected,
                             onOpenSettings = {
-                                navController.navigate(Screen.AppSettings.route) {
+                                navController.navigate(appSettingsRoute(adminShell = false, providerShell = false)) {
                                     launchSingleTop = true
                                 }
                             },
@@ -491,7 +556,7 @@ class MainActivity : ComponentActivity() {
                         ProfileScreen(
                             onTabSelected = onTabSelected,
                             onOpenSettings = {
-                                navController.navigate(Screen.AppSettings.route) {
+                                navController.navigate(appSettingsRoute(adminShell = false, providerShell = true)) {
                                     launchSingleTop = true
                                 }
                             },
@@ -505,23 +570,7 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(Screen.MoveHistory.route) { launchSingleTop = true }
                             },
                             isProviderMode = true,
-                            onProviderTabSelected = { tab ->
-                                when (tab) {
-                                    ProviderDashboardTab.Dashboard -> {
-                                        navController.navigate(Screen.ProviderDashboard.route) {
-                                            launchSingleTop = true
-                                        }
-                                    }
-
-                                    ProviderDashboardTab.Profile -> Unit
-                                    ProviderDashboardTab.Fleet,
-                                    ProviderDashboardTab.Drivers -> {
-                                        navController.navigate(Screen.ProviderDashboard.route) {
-                                            launchSingleTop = true
-                                        }
-                                    }
-                                }
-                            },
+                            onProviderTabSelected = onProviderDashboardTab,
                             onNavigateToLogin = {
                                 navController.navigate(Screen.Login.route) {
                                     popUpTo(navController.graph.id) {
@@ -574,43 +623,72 @@ class MainActivity : ComponentActivity() {
                             onBack = { navController.popBackStack() },
                             onTabSelected = onTabSelected,
                             onOpenSecurity = {
-                                navController.navigate(Screen.Security.route) {
+                                navController.navigate(securityRoute(adminShell = false, providerShell = false)) {
                                     launchSingleTop = true
                                 }
                             },
                             onOpenAppSettings = {
-                                navController.navigate(Screen.AppSettings.route) {
+                                navController.navigate(appSettingsRoute(adminShell = false, providerShell = false)) {
                                     launchSingleTop = true
                                 }
-                            }
+                            },
+                            isAdminShell = false,
+                            onAdminTabSelected = onAdminChromeTab
                         )
                     }
 
-                    composable(Screen.AppSettings.route) {
+                    composable(
+                        route = NavRoutes.APP_SETTINGS,
+                        arguments = navChromeArguments()
+                    ) { appSettingsEntry ->
+                        val adminShell = appSettingsEntry.arguments?.getBoolean(NAV_ADMIN_SHELL) ?: false
+                        val providerShell = appSettingsEntry.arguments?.getBoolean(NAV_PROVIDER_SHELL) ?: false
                         AppSettingsScreen(
                             onBack = { navController.popBackStack() },
                             onTabSelected = onTabSelected,
                             onOpenSecurity = {
-                                navController.navigate(Screen.Security.route) {
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    }
-
-                    composable(Screen.Security.route) {
-                        SecurityScreen(
-                            onBack = { navController.popBackStack() },
-                            onOpenOtp = { method ->
-                                navController.navigate(Screen.VerifyIdentity.route) {
+                                navController.navigate(
+                                    securityRoute(adminShell = adminShell, providerShell = providerShell)
+                                ) {
                                     launchSingleTop = true
                                 }
                             },
-                            onTabSelected = onTabSelected
+                            isProviderMode = providerShell,
+                            onProviderTabSelected = onProviderDashboardTab,
+                            isAdminShell = adminShell,
+                            onAdminTabSelected = onAdminChromeTab
                         )
                     }
 
-                    composable(Screen.VerifyIdentity.route) {
+                    composable(
+                        route = NavRoutes.SECURITY,
+                        arguments = navChromeArguments()
+                    ) { secEntry ->
+                        val adminShell = secEntry.arguments?.getBoolean(NAV_ADMIN_SHELL) ?: false
+                        val providerShell = secEntry.arguments?.getBoolean(NAV_PROVIDER_SHELL) ?: false
+                        SecurityScreen(
+                            onBack = { navController.popBackStack() },
+                            onOpenOtp = {
+                                navController.navigate(
+                                    verifyIdentityRoute(adminShell = adminShell, providerShell = providerShell)
+                                ) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            onTabSelected = onTabSelected,
+                            isProviderMode = providerShell,
+                            onProviderTabSelected = onProviderDashboardTab,
+                            isAdminShell = adminShell,
+                            onAdminTabSelected = onAdminChromeTab
+                        )
+                    }
+
+                    composable(
+                        route = NavRoutes.VERIFY_IDENTITY,
+                        arguments = navChromeArguments()
+                    ) { verifyEntry ->
+                        val adminShell = verifyEntry.arguments?.getBoolean(NAV_ADMIN_SHELL) ?: false
+                        val providerShell = verifyEntry.arguments?.getBoolean(NAV_PROVIDER_SHELL) ?: false
                         val forgotEmail = navController.previousBackStackEntry
                             ?.savedStateHandle
                             ?.get<String>("forgot_email")
@@ -629,59 +707,111 @@ class MainActivity : ComponentActivity() {
                                 if (!forgotEmail.isNullOrBlank() && method == "email") {
                                     passwordUpdateViewModel.sendPasswordResetEmail(forgotEmail)
                                 }
-                                navController.navigate(Screen.SecurityOtp.createRoute(method)) {
+                                navController.navigate(
+                                    securityOtpRoute(method, adminShell = adminShell, providerShell = providerShell)
+                                ) {
                                     launchSingleTop = true
                                 }
                             },
-                            onTabSelected = onTabSelected
-                            ,
+                            onTabSelected = onTabSelected,
+                            isProviderMode = providerShell,
+                            onProviderTabSelected = onProviderDashboardTab,
+                            isAdminShell = adminShell,
+                            onAdminTabSelected = onAdminChromeTab,
                             prefilledEmail = forgotEmail
                         )
                     }
 
-                    composable(Screen.SecurityOtp.route) { backStackEntry ->
-                        val method = backStackEntry.arguments?.getString("method").orEmpty()
+                    composable(
+                        route = NavRoutes.SECURITY_OTP,
+                        arguments = listOf(
+                            navArgument("method") { type = NavType.StringType },
+                            navAdminShellArgument(),
+                            navProviderShellArgument()
+                        )
+                    ) { otpEntry ->
+                        val method = otpEntry.arguments?.getString("method").orEmpty()
+                        val adminShell = otpEntry.arguments?.getBoolean(NAV_ADMIN_SHELL) ?: false
+                        val providerShell = otpEntry.arguments?.getBoolean(NAV_PROVIDER_SHELL) ?: false
 
                         SecurityOtpScreen(
                             verificationMethod = method,
                             onBack = { navController.popBackStack() },
                             onVerify = {
-                                navController.navigate(Screen.NewPassword.route) {
+                                navController.navigate(
+                                    newPasswordRoute(adminShell = adminShell, providerShell = providerShell)
+                                ) {
                                     launchSingleTop = true
                                 }
                             },
-                            onTabSelected = onTabSelected
+                            onTabSelected = onTabSelected,
+                            isProviderMode = providerShell,
+                            onProviderTabSelected = onProviderDashboardTab,
+                            isAdminShell = adminShell,
+                            onAdminTabSelected = onAdminChromeTab
                         )
                     }
 
-                    composable(Screen.NewPassword.route) {
-                        val forgotEmail = runCatching {
-                            navController.getBackStackEntry(Screen.VerifyIdentity.route)
-                                .savedStateHandle
-                                .get<String>("forgot_email")
-                        }.getOrNull()
+                    composable(
+                        route = NavRoutes.NEW_PASSWORD,
+                        arguments = navChromeArguments()
+                    ) { npEntry ->
+                        val adminShell = npEntry.arguments?.getBoolean(NAV_ADMIN_SHELL) ?: false
+                        val providerShell = npEntry.arguments?.getBoolean(NAV_PROVIDER_SHELL) ?: false
+
+                        val verifyRoute =
+                            verifyIdentityRoute(adminShell = adminShell, providerShell = providerShell)
+                        val forgotEmail = navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.get<String>("forgot_email")
+                            ?: runCatching {
+                                navController.getBackStackEntry(verifyRoute).savedStateHandle
+                                    .get<String>("forgot_email")
+                            }.getOrNull()
 
                         NewPasswordScreen(
                             onBack = { navController.popBackStack() },
                             onPasswordChanged = {
-                                navController.navigate(Screen.SecurityUpdated.route) {
+                                navController.navigate(
+                                    securityUpdatedRoute(adminShell = adminShell, providerShell = providerShell)
+                                ) {
                                     launchSingleTop = true
                                 }
                             },
                             forgotPasswordEmail = forgotEmail,
-                            onTabSelected = onTabSelected
+                            onTabSelected = onTabSelected,
+                            isProviderMode = providerShell,
+                            onProviderTabSelected = onProviderDashboardTab,
+                            isAdminShell = adminShell,
+                            onAdminTabSelected = onAdminChromeTab
                         )
                     }
 
-                    composable(Screen.SecurityUpdated.route) {
+                    composable(
+                        route = NavRoutes.SECURITY_UPDATED,
+                        arguments = navChromeArguments()
+                    ) { updatedEntry ->
+                        val adminShell = updatedEntry.arguments?.getBoolean(NAV_ADMIN_SHELL) ?: false
+                        val providerShell = updatedEntry.arguments?.getBoolean(NAV_PROVIDER_SHELL) ?: false
+
                         PasswordUpdatedScreen(
                             onVerifyAgain = {
-                                navController.popBackStack(Screen.Security.route, inclusive = false)
+                                navController.popBackStack(
+                                    securityRoute(adminShell = adminShell, providerShell = providerShell),
+                                    inclusive = false
+                                )
                             },
                             onGoToSettings = {
-                                navController.popBackStack(Screen.AppSettings.route, inclusive = false)
+                                navController.popBackStack(
+                                    appSettingsRoute(adminShell = adminShell, providerShell = providerShell),
+                                    inclusive = false
+                                )
                             },
-                            onTabSelected = onTabSelected
+                            onTabSelected = onTabSelected,
+                            isProviderMode = providerShell,
+                            onProviderTabSelected = onProviderDashboardTab,
+                            isAdminShell = adminShell,
+                            onAdminTabSelected = onAdminChromeTab
                         )
                     }
                 }

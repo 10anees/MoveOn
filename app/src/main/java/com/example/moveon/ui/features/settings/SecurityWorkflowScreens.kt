@@ -52,9 +52,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.moveon.ui.components.AdminDashboardTab
 import com.example.moveon.ui.components.DashboardTab
-import com.example.moveon.ui.components.MoveOnBottomBar
-import com.example.moveon.ui.components.ProviderBottomBar
+import com.example.moveon.ui.components.SettingsChromeBottomBar
 import com.example.moveon.ui.components.ProviderDashboardTab
 import com.example.moveon.ui.theme.LightBackground
 import com.example.moveon.ui.theme.LightBorder
@@ -72,6 +72,8 @@ fun VerifyIdentityScreen(
     onTabSelected: (DashboardTab) -> Unit,
     isProviderMode: Boolean = false,
     onProviderTabSelected: (ProviderDashboardTab) -> Unit = {},
+    isAdminShell: Boolean = false,
+    onAdminTabSelected: (AdminDashboardTab) -> Unit = {},
     prefilledEmail: String? = null,
     viewModel: SecurityViewModel = hiltViewModel()
 ) {
@@ -82,17 +84,16 @@ fun VerifyIdentityScreen(
     Scaffold(
         containerColor = LightBackground,
         bottomBar = {
-            if (isProviderMode) {
-                ProviderBottomBar(
-                    selectedTab = ProviderDashboardTab.Profile,
-                    onTabSelected = onProviderTabSelected
-                )
-            } else {
-                MoveOnBottomBar(
-                    selectedTab = DashboardTab.Profile,
-                    onTabSelected = onTabSelected
-                )
-            }
+            SettingsChromeBottomBar(
+                isAdminShell = isAdminShell,
+                isProviderMode = isProviderMode,
+                dashboardTab = DashboardTab.Profile,
+                providerTab = ProviderDashboardTab.Profile,
+                adminTab = AdminDashboardTab.Profile,
+                onUserTabSelected = onTabSelected,
+                onProviderTabSelected = onProviderTabSelected,
+                onAdminTabSelected = onAdminTabSelected
+            )
         }
     ) { innerPadding ->
         Column(
@@ -179,6 +180,8 @@ fun NewPasswordScreen(
     onTabSelected: (DashboardTab) -> Unit,
     isProviderMode: Boolean = false,
     onProviderTabSelected: (ProviderDashboardTab) -> Unit = {},
+    isAdminShell: Boolean = false,
+    onAdminTabSelected: (AdminDashboardTab) -> Unit = {},
     forgotPasswordEmail: String? = null,
     viewModel: PasswordUpdateViewModel = hiltViewModel()
 ) {
@@ -201,17 +204,16 @@ fun NewPasswordScreen(
     Scaffold(
         containerColor = LightBackground,
         bottomBar = {
-            if (isProviderMode) {
-                ProviderBottomBar(
-                    selectedTab = ProviderDashboardTab.Profile,
-                    onTabSelected = onProviderTabSelected
-                )
-            } else {
-                MoveOnBottomBar(
-                    selectedTab = DashboardTab.Profile,
-                    onTabSelected = onTabSelected
-                )
-            }
+            SettingsChromeBottomBar(
+                isAdminShell = isAdminShell,
+                isProviderMode = isProviderMode,
+                dashboardTab = DashboardTab.Profile,
+                providerTab = ProviderDashboardTab.Profile,
+                adminTab = AdminDashboardTab.Profile,
+                onUserTabSelected = onTabSelected,
+                onProviderTabSelected = onProviderTabSelected,
+                onAdminTabSelected = onAdminTabSelected
+            )
         }
     ) { innerPadding ->
         Column(

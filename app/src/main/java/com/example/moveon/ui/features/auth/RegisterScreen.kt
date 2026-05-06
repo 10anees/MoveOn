@@ -89,7 +89,7 @@ fun RegisterScreen(
                 .padding(bottom = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            UserRole.values().forEach { role ->
+            listOf(UserRole.USER, UserRole.PROVIDER, UserRole.DRIVER).forEach { role ->
                 FilterChip(
                     selected = selectedRole == role,
                     onClick = { selectedRole = role },
@@ -133,7 +133,8 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 RegisterTextField(value = licenseNo, onValueChange = { licenseNo = it }, label = "License Number")
             }
-            UserRole.USER -> { /* No extra fields */ }
+            UserRole.USER -> Unit
+            UserRole.ADMIN -> Unit
         }
 
         // Error Display
@@ -163,6 +164,7 @@ fun RegisterScreen(
                         email, password, firstName, lastName, phoneNumber,
                         providerId, vehicleId, licenseNo
                     ))
+                    UserRole.ADMIN -> Unit
                 }
             },
             modifier = Modifier

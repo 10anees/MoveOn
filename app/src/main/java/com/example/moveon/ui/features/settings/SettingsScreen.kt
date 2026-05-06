@@ -61,11 +61,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.moveon.ui.components.AdminDashboardTab
 import com.example.moveon.ui.components.DashboardTab
-import com.example.moveon.ui.components.MoveOnBottomBar
 import com.example.moveon.ui.components.MoveOnOutlinedPillButton
-import com.example.moveon.ui.components.ProviderBottomBar
 import com.example.moveon.ui.components.ProviderDashboardTab
+import com.example.moveon.ui.components.SettingsChromeBottomBar
 import com.example.moveon.ui.theme.LightBackground
 import com.example.moveon.ui.theme.LightBorder
 import com.example.moveon.ui.theme.LightSurface
@@ -85,6 +85,8 @@ fun SettingsScreen(
     onOpenAppSettings: () -> Unit,
     isProviderMode: Boolean = false,
     onProviderTabSelected: (ProviderDashboardTab) -> Unit = {},
+    isAdminShell: Boolean = false,
+    onAdminTabSelected: (AdminDashboardTab) -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state = viewModel.uiState.value
@@ -99,17 +101,16 @@ fun SettingsScreen(
     Scaffold(
         containerColor = LightBackground,
         bottomBar = {
-            if (isProviderMode) {
-                ProviderBottomBar(
-                    selectedTab = ProviderDashboardTab.Profile,
-                    onTabSelected = onProviderTabSelected
-                )
-            } else {
-                MoveOnBottomBar(
-                    selectedTab = DashboardTab.Profile,
-                    onTabSelected = onTabSelected
-                )
-            }
+            SettingsChromeBottomBar(
+                isAdminShell = isAdminShell,
+                isProviderMode = isProviderMode,
+                dashboardTab = DashboardTab.Profile,
+                providerTab = ProviderDashboardTab.Profile,
+                adminTab = AdminDashboardTab.Profile,
+                onUserTabSelected = onTabSelected,
+                onProviderTabSelected = onProviderTabSelected,
+                onAdminTabSelected = onAdminTabSelected
+            )
         }
     ) { innerPadding ->
         Column(
@@ -331,22 +332,23 @@ fun SecurityScreen(
     onTabSelected: (DashboardTab) -> Unit,
     isProviderMode: Boolean = false,
     onProviderTabSelected: (ProviderDashboardTab) -> Unit = {},
+    isAdminShell: Boolean = false,
+    onAdminTabSelected: (AdminDashboardTab) -> Unit = {},
     viewModel: SecurityViewModel = hiltViewModel()
 ) {
     Scaffold(
         containerColor = LightBackground,
         bottomBar = {
-            if (isProviderMode) {
-                ProviderBottomBar(
-                    selectedTab = ProviderDashboardTab.Profile,
-                    onTabSelected = onProviderTabSelected
-                )
-            } else {
-                MoveOnBottomBar(
-                    selectedTab = DashboardTab.Profile,
-                    onTabSelected = onTabSelected
-                )
-            }
+            SettingsChromeBottomBar(
+                isAdminShell = isAdminShell,
+                isProviderMode = isProviderMode,
+                dashboardTab = DashboardTab.Profile,
+                providerTab = ProviderDashboardTab.Profile,
+                adminTab = AdminDashboardTab.Profile,
+                onUserTabSelected = onTabSelected,
+                onProviderTabSelected = onProviderTabSelected,
+                onAdminTabSelected = onAdminTabSelected
+            )
         }
     ) { innerPadding ->
         Column(
@@ -417,6 +419,8 @@ fun SecurityOtpScreen(
     onTabSelected: (DashboardTab) -> Unit,
     isProviderMode: Boolean = false,
     onProviderTabSelected: (ProviderDashboardTab) -> Unit = {},
+    isAdminShell: Boolean = false,
+    onAdminTabSelected: (AdminDashboardTab) -> Unit = {},
     viewModel: SecurityViewModel = hiltViewModel()
 ) {
     val user = viewModel.currentUser.collectAsState().value
@@ -430,17 +434,16 @@ fun SecurityOtpScreen(
     Scaffold(
         containerColor = LightBackground,
         bottomBar = {
-            if (isProviderMode) {
-                ProviderBottomBar(
-                    selectedTab = ProviderDashboardTab.Profile,
-                    onTabSelected = onProviderTabSelected
-                )
-            } else {
-                MoveOnBottomBar(
-                    selectedTab = DashboardTab.Profile,
-                    onTabSelected = onTabSelected
-                )
-            }
+            SettingsChromeBottomBar(
+                isAdminShell = isAdminShell,
+                isProviderMode = isProviderMode,
+                dashboardTab = DashboardTab.Profile,
+                providerTab = ProviderDashboardTab.Profile,
+                adminTab = AdminDashboardTab.Profile,
+                onUserTabSelected = onTabSelected,
+                onProviderTabSelected = onProviderTabSelected,
+                onAdminTabSelected = onAdminTabSelected
+            )
         }
     ) { innerPadding ->
         Column(
@@ -499,22 +502,23 @@ fun PasswordUpdatedScreen(
     onGoToSettings: () -> Unit,
     onTabSelected: (DashboardTab) -> Unit,
     isProviderMode: Boolean = false,
-    onProviderTabSelected: (ProviderDashboardTab) -> Unit = {}
+    onProviderTabSelected: (ProviderDashboardTab) -> Unit = {},
+    isAdminShell: Boolean = false,
+    onAdminTabSelected: (AdminDashboardTab) -> Unit = {}
 ) {
     Scaffold(
         containerColor = LightBackground,
         bottomBar = {
-            if (isProviderMode) {
-                ProviderBottomBar(
-                    selectedTab = ProviderDashboardTab.Profile,
-                    onTabSelected = onProviderTabSelected
-                )
-            } else {
-                MoveOnBottomBar(
-                    selectedTab = DashboardTab.Profile,
-                    onTabSelected = onTabSelected
-                )
-            }
+            SettingsChromeBottomBar(
+                isAdminShell = isAdminShell,
+                isProviderMode = isProviderMode,
+                dashboardTab = DashboardTab.Profile,
+                providerTab = ProviderDashboardTab.Profile,
+                adminTab = AdminDashboardTab.Profile,
+                onUserTabSelected = onTabSelected,
+                onProviderTabSelected = onProviderTabSelected,
+                onAdminTabSelected = onAdminTabSelected
+            )
         }
     ) { innerPadding ->
         Column(

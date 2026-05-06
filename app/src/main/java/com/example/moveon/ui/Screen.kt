@@ -10,6 +10,7 @@ sealed class Screen (val route: String) {
     object ProviderSetupStepTwo : Screen("provider_setup_step_2")
     object ProviderSetupStepThree : Screen("provider_setup_step_3")
     object ProviderDashboard : Screen("provider_dashboard")
+    object AdminDashboard : Screen("admin_dashboard")
     object Home: Screen(route = "home")
     object Book : Screen("book")
     object Logistics : Screen("logistics")
