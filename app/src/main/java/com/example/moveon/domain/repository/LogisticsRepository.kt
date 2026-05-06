@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.Flow
 interface LogisticsRepository {
     suspend fun getMarketplaceProviders(): List<Provider>
     suspend fun getProviderById(providerId: String): Result<Provider?>
+    suspend fun getAllProvidersForAdmin(): Result<List<Provider>>
+    suspend fun updateProviderByAdmin(provider: Provider): Result<Unit>
+    suspend fun deleteProviderByAdmin(providerId: String): Result<Unit>
     suspend fun getUserById(userId: String): Result<User?>
     suspend fun getVehiclesForProvider(providerId: String): Result<List<Vehicle>>
     suspend fun createVehicle(vehicle: Vehicle): Result<Vehicle>

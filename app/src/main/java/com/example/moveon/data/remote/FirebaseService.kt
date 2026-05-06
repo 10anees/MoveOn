@@ -13,6 +13,7 @@ import com.moveon.app.data.remote.dto.BookingDto
 import com.moveon.app.data.remote.dto.BookingVehicleDto
 import com.moveon.app.data.remote.dto.DriverDto
 import com.moveon.app.data.remote.dto.ProviderDto
+import com.moveon.app.data.remote.dto.UserDto
 import com.moveon.app.data.remote.dto.VehicleDto
 import com.example.moveon.domain.model.BookingStatus
 import com.example.moveon.domain.model.TripActorType
@@ -254,6 +255,28 @@ class FirebaseService @Inject constructor(
             .toObject(ProviderDto::class.java)
     }
 
+    suspend fun getAllProvidersForAdmin(): List<ProviderDto> {
+        return firestore.collection("providers")
+            .get()
+            .await()
+            .toObjects(ProviderDto::class.java)
+    }
+
+    suspend fun updateProviderByAdmin(provider: ProviderDto) {
+        require(provider.provider_id.isNotBlank()) { "Provider id is required." }
+        firestore.collection("providers")
+            .document(provider.provider_id)
+            .set(provider)
+            .await()
+    }
+
+    suspend fun deleteProviderByAdmin(providerId: String) {
+        firestore.collection("providers")
+            .document(providerId)
+            .delete()
+            .await()
+    }
+
     suspend fun getVehiclesForProvider(providerId: String): List<VehicleDto> {
         return firestore.collection("vehicles")
             .whereEqualTo("provider_id", providerId)
@@ -384,5 +407,66 @@ class FirebaseService @Inject constructor(
             created_at = createdAt,
             last_login_time = lastLogin
         )
+    }
+
+    suspend fun getAllUsersForAdmin(): List<UserDto> {
+        return firestore.collection("users")
+            .get()
+            .await()
+            .documents
+            .map { snap ->
+                val parsed = snap.toObject(UserDto::class.java)
+                val firstSnake = snap.getString("first_name").orEmpty()
+                val lastSnake = snap.getString("last_name").orEmpty()
+                val firstCamel = snap.getString("firstName").orEmpty()
+                val lastCamel = snap.getString("lastName").orEmpty()
+                val email = snap.getString("email") ?: parsed?.email.orEmpty()
+                val phone = snap.getString("phone_number")
+                    ?: snap.getString("phoneNumber")
+                    ?: parsed?.phone_number.orEmpty()
+                val role = snap.getString("role") ?: parsed?.role ?: "User"
+                val createdAt = (snap.getLong("created_at").takeIf { it != 0L })
+                    ?: snap.getLong("createdAt").takeIf { it != 0L }
+                    ?: parsed?.created_at
+                    ?: 0L
+                val lastLogin = snap.getLong("last_login_time").takeIf { it != 0L }
+                    ?: snap.getLong("lastLoginTime").takeIf { it != 0L }
+                    ?: parsed?.last_login_time
+                val first = firstSnake.ifBlank { firstCamel }.ifBlank { parsed?.first_name.orEmpty() }
+                val last = lastSnake.ifBlank { lastCamel }.ifBlank { parsed?.last_name.orEmpty() }
+                UserDto(
+                    user_id = snap.id,
+                    first_name = first,
+                    last_name = last,
+                    email = email,
+                    phone_number = phone,
+                    role = role,
+                    created_at = createdAt,
+                    last_login_time = lastLogin
+                )
+            }
+    }
+
+    suspend fun updateUserByAdmin(user: UserDto) {
+        require(user.user_id.isNotBlank()) { "User id is required." }
+        firestore.collection("users")
+            .document(user.user_id)
+            .update(
+                mapOf(
+                    "first_name" to user.first_name,
+                    "last_name" to user.last_name,
+                    "email" to user.email,
+                    "phone_number" to user.phone_number,
+                    "role" to user.role
+                )
+            )
+            .await()
+    }
+
+    suspend fun deleteUserByAdmin(userId: String) {
+        firestore.collection("users")
+            .document(userId)
+            .delete()
+            .await()
     }
 }

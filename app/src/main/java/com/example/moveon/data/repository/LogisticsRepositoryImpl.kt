@@ -39,6 +39,31 @@ class LogisticsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAllProvidersForAdmin(): Result<List<Provider>> {
+        return runCatching {
+            firebaseService.getAllProvidersForAdmin()
+                .map { dto ->
+                    val phone = runCatching { firebaseService.getUserById(dto.provider_id) }
+                        .getOrNull()
+                        ?.phone_number
+                        .orEmpty()
+                    dto.toDomainModel().copy(phoneNumber = phone)
+                }
+        }
+    }
+
+    override suspend fun updateProviderByAdmin(provider: Provider): Result<Unit> {
+        return runCatching {
+            firebaseService.updateProviderByAdmin(provider.toDto())
+        }
+    }
+
+    override suspend fun deleteProviderByAdmin(providerId: String): Result<Unit> {
+        return runCatching {
+            firebaseService.deleteProviderByAdmin(providerId)
+        }
+    }
+
     override suspend fun getUserById(userId: String): Result<User?> {
         return runCatching {
             firebaseService.getUserById(userId)?.toDomainModel()

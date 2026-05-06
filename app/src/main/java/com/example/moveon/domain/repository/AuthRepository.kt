@@ -59,4 +59,7 @@ interface AuthRepository {
     ): Result<User>
 
     suspend fun signInWithGoogle(idToken: String): Result<User>
+    suspend fun getAllUsers(): Result<List<User>>
+    suspend fun updateUserByAdmin(user: User): Result<Unit>
+    suspend fun deleteUserByAdmin(userId: String): Result<Unit>
 }

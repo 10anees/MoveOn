@@ -1,6 +1,7 @@
 package com.example.moveon.data.repository
 
 import com.example.moveon.data.mapper.toDomainModel
+import com.example.moveon.data.mapper.toDto
 import com.example.moveon.data.mapper.toSessionEntity
 import com.example.moveon.data.local.dao.UserSessionDao
 import com.example.moveon.domain.model.User
@@ -371,6 +372,50 @@ class AuthRepositoryImpl @Inject constructor(
             Result.success(user)
         } catch (e: Exception) {
             Result.failure(mapAuthException(e))
+        }
+    }
+
+    override suspend fun getAllUsers(): Result<List<User>> {
+        return runCatching {
+            firebaseFirestore.collection("users")
+                .get()
+                .await()
+                .documents
+                .mapNotNull { snap ->
+                    val parsed = snap.toObject(UserDto::class.java) ?: return@mapNotNull null
+                    parsed.copy(user_id = snap.id).toDomainModel()
+                }
+        }
+    }
+
+    override suspend fun updateUserByAdmin(user: User): Result<Unit> {
+        return runCatching {
+            val dto = user.toDto()
+            firebaseFirestore.collection("users")
+                .document(user.id)
+                .update(
+                    mapOf(
+                        "first_name" to dto.first_name,
+                        "last_name" to dto.last_name,
+                        "email" to dto.email,
+                        "phone_number" to dto.phone_number,
+                        "role" to dto.role
+                    )
+                )
+                .await()
+        }
+    }
+
+    override suspend fun deleteUserByAdmin(userId: String): Result<Unit> {
+        val selfUid = firebaseAuth.currentUser?.uid
+        if (selfUid != null && userId == selfUid) {
+            return Result.failure(Exception("You cannot delete your own account."))
+        }
+        return runCatching {
+            firebaseFirestore.collection("users")
+                .document(userId)
+                .delete()
+                .await()
         }
     }
 }
