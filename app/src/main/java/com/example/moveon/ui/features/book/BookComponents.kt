@@ -40,6 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.moveon.ui.theme.Accent
+import com.example.moveon.ui.theme.AccentBorder
+import com.example.moveon.ui.theme.AccentSurface
+import com.example.moveon.ui.theme.IconBackground
 import com.example.moveon.ui.theme.LightBackground
 import com.example.moveon.ui.theme.LightBorder
 import com.example.moveon.ui.theme.LightSurface
@@ -47,6 +50,7 @@ import com.example.moveon.ui.theme.LightSurfaceVariant
 import com.example.moveon.ui.theme.LightTextPrimary
 import com.example.moveon.ui.theme.LightTextSecondary
 import com.example.moveon.ui.theme.Primary
+import com.example.moveon.ui.theme.StepInactive
 
 data class BookServiceCardUi(
     val id: String,
@@ -140,7 +144,7 @@ private fun StepIndicator(step: Int, currentStep: Int, title: String) {
         active -> Primary
         else -> LightBorder
     }
-    val contentColor = if (completed || active) Color.White else Color(0xFF666666)
+    val contentColor = if (completed || active) Color.White else StepInactive
 
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(
@@ -188,7 +192,7 @@ fun BookServiceListCard(
             .clickable(onClick = onSelect),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) Color(0xFFDDECF9) else LightSurface
+            containerColor = if (selected) AccentSurface else LightSurface
         ),
         border = BorderStroke(
             width = if (selected) 1.5.dp else 1.dp,
@@ -205,7 +209,7 @@ fun BookServiceListCard(
             Box(
                 modifier = Modifier
                     .size(42.dp)
-                    .background(Color(0xFFE8EDF3), RoundedCornerShape(12.dp)),
+                    .background(IconBackground, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -290,7 +294,7 @@ fun BookProviderListCard(
                     Box(
                         modifier = Modifier
                             .size(46.dp)
-                            .background(Color(0xFFE8EDF3), CircleShape),
+                            .background(IconBackground, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -507,8 +511,8 @@ fun WaitingForProviderOverlay(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFDDECF9)),
-                    border = BorderStroke(1.dp, Color(0xFF9FC4E9))
+                    colors = CardDefaults.cardColors(containerColor = AccentSurface),
+                    border = BorderStroke(1.dp, AccentBorder)
                 ) {
                     Row(
                         modifier = Modifier

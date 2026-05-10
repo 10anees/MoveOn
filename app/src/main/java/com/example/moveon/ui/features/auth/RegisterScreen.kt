@@ -18,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.moveon.domain.model.UserRole
+import com.example.moveon.ui.theme.LightTextPrimary
+import com.example.moveon.ui.theme.LightTextSecondary
+import com.example.moveon.ui.theme.Primary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -207,7 +210,7 @@ fun RegisterTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label) },
+        label = { Text(label, color = LightTextSecondary) },
         modifier = modifier.fillMaxWidth(),
         singleLine = true,
         visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
@@ -218,11 +221,14 @@ fun RegisterTextField(
             unfocusedContainerColor = Color.Transparent,
             focusedIndicatorColor = MaterialTheme.colorScheme.primary,
             unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
-            disabledTextColor = Color.Black.copy(alpha = 0.5f),
-            focusedPlaceholderColor = Color.Black.copy(alpha = 0.6f),
-            unfocusedPlaceholderColor = Color.Black.copy(alpha = 0.6f)
+            focusedTextColor = LightTextPrimary,
+            unfocusedTextColor = LightTextPrimary,
+            disabledTextColor = LightTextSecondary,
+            focusedPlaceholderColor = LightTextSecondary,
+            unfocusedPlaceholderColor = LightTextSecondary,
+            focusedLabelColor = Primary,
+            unfocusedLabelColor = LightTextSecondary,
+            cursorColor = Primary
         )
     )
 }

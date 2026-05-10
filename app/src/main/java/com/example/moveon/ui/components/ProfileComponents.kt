@@ -33,6 +33,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.moveon.ui.theme.LightBorder
+import com.example.moveon.ui.theme.LightSurface
+import com.example.moveon.ui.theme.LightSurfaceVariant
+import com.example.moveon.ui.theme.LightTextPrimary
+import com.example.moveon.ui.theme.LightTextSecondary
+import com.example.moveon.ui.theme.LightTextTertiary
+import com.example.moveon.ui.theme.Primary
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -88,8 +95,8 @@ fun MoveOnProfileHeaderCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
+        colors = CardDefaults.cardColors(containerColor = LightSurface),
+        border = BorderStroke(1.dp, LightBorder),
         shape = RoundedCornerShape(16.dp)
     ) {
         Box(
@@ -180,8 +187,8 @@ fun MoveOnProfileActionRow(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
+        colors = CardDefaults.cardColors(containerColor = LightSurface),
+        border = BorderStroke(1.dp, LightBorder),
         shape = RoundedCornerShape(14.dp),
         onClick = onClick
     ) {
@@ -201,7 +208,7 @@ fun MoveOnProfileActionRow(
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    tint = Color(0xFF1565C0)
+                    tint = Primary
                 )
             }
 
@@ -211,19 +218,19 @@ fun MoveOnProfileActionRow(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF1C1B1F)
+                    color = LightTextPrimary
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF757575)
+                    color = LightTextSecondary
                 )
             }
 
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
-                tint = Color(0xFF9E9E9E)
+                tint = LightTextTertiary
             )
         }
     }
@@ -249,13 +256,13 @@ fun MoveOnProfileActionRowItem(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFF5F5F5), RoundedCornerShape(100.dp)),
+                    .background(LightSurfaceVariant, RoundedCornerShape(100.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    tint = Color(0xFF1565C0),
+                    tint = Primary,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -264,14 +271,14 @@ fun MoveOnProfileActionRowItem(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF1C1B1F),
+                color = LightTextPrimary,
                 modifier = Modifier.weight(1f)
             )
 
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
-                tint = Color(0xFF9E9E9E),
+                tint = LightTextTertiary,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -281,7 +288,7 @@ fun MoveOnProfileActionRowItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(Color(0xFFE0E0E0))
+                    .background(LightBorder)
                     .padding(horizontal = 16.dp)
             )
         }

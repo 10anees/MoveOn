@@ -65,7 +65,7 @@ fun ProviderVehiclesScreen(
         state.vehicles.filter { it.type == selectedTab }
     }
 
-    Column(modifier = modifier.fillMaxSize().background(Color(0xFFF5F5F5))) {
+    Column(modifier = modifier.fillMaxSize().background(LightSurfaceVariant)) {
         // Blue Header Section
         Box(
             modifier = Modifier
@@ -222,7 +222,7 @@ private fun VehicleCard(
     val statusText = if (vehicle.isAvailable) "Active" else "Idle"
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = LightSurface),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, LightBorder),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -284,13 +284,13 @@ private fun VehicleCard(
                 // Plate Badge
                 Box(
                     modifier = Modifier
-                        .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+                        .background(LightSurfaceVariant, RoundedCornerShape(8.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = vehicle.plateNumber,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black,
+                        color = LightTextPrimary,
                         fontSize = 13.sp
                     )
                 }
@@ -332,7 +332,7 @@ private fun VehicleFormBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onEvent(VehiclesEvent.CloseForm) },
         sheetState = sheetState,
-        containerColor = Color.White,
+        containerColor = LightSurface,
         dragHandle = null
     ) {
         Column(
@@ -348,18 +348,18 @@ private fun VehicleFormBottomSheet(
                 verticalAlignment = Alignment.Top
             ) {
                 Column {
-                    Text("Add Vehicle", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text("Add Vehicle", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = LightTextPrimary)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("Add one or multiple vehicles at once", color = LightTextSecondary, fontSize = 14.sp)
                 }
                 Box(
                     modifier = Modifier
                         .size(32.dp)
-                        .background(Color(0xFFF5F5F5), CircleShape)
+                        .background(LightSurfaceVariant, CircleShape)
                         .clickable { onEvent(VehiclesEvent.CloseForm) },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("✕", color = Color.Black, fontSize = 16.sp)
+                    Text("✕", color = LightTextPrimary, fontSize = 16.sp)
                 }
             }
 
@@ -430,20 +430,20 @@ private fun VehicleFormBottomSheet(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(18.dp))
-                            .background(if (!state.form.isMultiple) Color(0xFFF5F5F5) else Color.Transparent)
+                            .background(if (!state.form.isMultiple) LightSurfaceVariant else Color.Transparent)
                             .clickable { onEvent(VehiclesEvent.IsMultipleChanged(false)) }
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Text("Single", fontSize = 12.sp, color = if (!state.form.isMultiple) Color.Black else LightTextSecondary)
+                        Text("Single", fontSize = 12.sp, color = if (!state.form.isMultiple) LightTextPrimary else LightTextSecondary)
                     }
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(18.dp))
-                            .background(if (state.form.isMultiple) Color.White else Color.Transparent)
+                            .background(if (state.form.isMultiple) LightSurfaceVariant else Color.Transparent)
                             .clickable { onEvent(VehiclesEvent.IsMultipleChanged(true)) }
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Text("Multiple", fontSize = 12.sp, color = if (state.form.isMultiple) Color.Black else LightTextSecondary)
+                        Text("Multiple", fontSize = 12.sp, color = if (state.form.isMultiple) LightTextPrimary else LightTextSecondary)
                     }
                 }
             }
@@ -456,7 +456,7 @@ private fun VehicleFormBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.LocalShipping, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.Black)
+                    Icon(Icons.Outlined.LocalShipping, contentDescription = null, modifier = Modifier.size(16.dp), tint = LightTextPrimary)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = if (state.form.isMultiple) "Plate Numbers (${state.form.plateNumbers.size} vehicles)" else "Plate Number",
@@ -550,11 +550,11 @@ private fun CategoryCard(title: String, subtitle: String, isSelected: Boolean, m
                 color = if (isSelected) Primary else LightBorder,
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(if (isSelected) Primary.copy(alpha = 0.05f) else Color.White, RoundedCornerShape(12.dp))
+            .background(if (isSelected) Primary.copy(alpha = 0.05f) else LightSurface, RoundedCornerShape(12.dp))
             .padding(10.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-            Text(title, fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 13.sp)
+            Text(title, fontWeight = FontWeight.Bold, color = LightTextPrimary, fontSize = 13.sp)
             Spacer(modifier = Modifier.height(4.dp))
             Text(subtitle, color = LightTextSecondary, fontSize = 11.sp, textAlign = TextAlign.Center, lineHeight = 14.sp)
         }
@@ -571,7 +571,7 @@ private fun VehicleField(
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(text = label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color.Black)
+        Text(text = label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = LightTextPrimary)
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -581,13 +581,13 @@ private fun VehicleField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF9F9F9),
-                unfocusedContainerColor = Color(0xFFF9F9F9),
-                disabledContainerColor = Color(0xFFF9F9F9),
+                focusedContainerColor = LightSurfaceVariant,
+                unfocusedContainerColor = LightSurfaceVariant,
+                disabledContainerColor = LightSurfaceVariant,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
+                focusedTextColor = LightTextPrimary,
+                unfocusedTextColor = LightTextPrimary
             )
         )
     }
@@ -601,7 +601,7 @@ private fun ConfirmDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = Color.White,
+        containerColor = LightSurface,
         shape = RoundedCornerShape(16.dp),
         title = { 
             Row(verticalAlignment = Alignment.CenterVertically) {

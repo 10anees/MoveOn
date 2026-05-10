@@ -61,7 +61,7 @@ fun ProviderDriversScreen(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize().background(Color(0xFFF5F5F5))) {
+    Column(modifier = modifier.fillMaxSize().background(LightSurfaceVariant)) {
         // Blue Header Section
         Box(
             modifier = Modifier
@@ -226,7 +226,7 @@ private fun DriverCard(
     var expanded by remember { mutableStateOf(false) }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = LightSurface),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, LightBorder),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -393,7 +393,7 @@ private fun RegisterDriverBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onEvent(DriversEvent.CloseAddForm) },
         sheetState = sheetState,
-        containerColor = Color.White,
+        containerColor = LightSurface,
         dragHandle = null
     ) {
         Column(
@@ -409,18 +409,18 @@ private fun RegisterDriverBottomSheet(
                 verticalAlignment = Alignment.Top
             ) {
                 Column {
-                    Text("Register New Driver", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text("Register New Driver", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = LightTextPrimary)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("Add a driver to your fleet", color = LightTextSecondary, fontSize = 14.sp)
                 }
                 Box(
                     modifier = Modifier
                         .size(32.dp)
-                        .background(Color(0xFFF5F5F5), CircleShape)
+                        .background(LightSurfaceVariant, CircleShape)
                         .clickable { onEvent(DriversEvent.CloseAddForm) },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Black, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = LightTextPrimary, modifier = Modifier.size(16.dp))
                 }
             }
 
@@ -467,10 +467,10 @@ private fun DriverField(
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (icon != null) {
-                Icon(icon, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color.Black)
+                Icon(icon, contentDescription = null, modifier = Modifier.size(14.dp), tint = LightTextPrimary)
                 Spacer(modifier = Modifier.width(6.dp))
             }
-            Text(text = label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color.Black)
+            Text(text = label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = LightTextPrimary)
         }
         OutlinedTextField(
             value = value,
@@ -481,13 +481,13 @@ private fun DriverField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF9F9F9),
-                unfocusedContainerColor = Color(0xFFF9F9F9),
-                disabledContainerColor = Color(0xFFF9F9F9),
+                focusedContainerColor = LightSurfaceVariant,
+                unfocusedContainerColor = LightSurfaceVariant,
+                disabledContainerColor = LightSurfaceVariant,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
+                focusedTextColor = LightTextPrimary,
+                unfocusedTextColor = LightTextPrimary
             )
         )
     }
@@ -505,7 +505,7 @@ private fun AssignVehicleBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { onEvent(DriversEvent.CloseAssignForm) },
         sheetState = sheetState,
-        containerColor = Color.White,
+        containerColor = LightSurface,
         dragHandle = null
     ) {
         Column(
@@ -521,18 +521,18 @@ private fun AssignVehicleBottomSheet(
                 verticalAlignment = Alignment.Top
             ) {
                 Column {
-                    Text("Assign Vehicle", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text("Assign Vehicle", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = LightTextPrimary)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("Select a vehicle for ${driver?.name ?: "this driver"}", color = LightTextSecondary, fontSize = 14.sp)
                 }
                 Box(
                     modifier = Modifier
                         .size(32.dp)
-                        .background(Color(0xFFF5F5F5), CircleShape)
+                        .background(LightSurfaceVariant, CircleShape)
                         .clickable { onEvent(DriversEvent.CloseAssignForm) },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Black, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = LightTextPrimary, modifier = Modifier.size(16.dp))
                 }
             }
 
@@ -615,7 +615,7 @@ private fun VehicleSelectionCard(
                 color = if (isSelected) Primary else LightBorder,
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(if (isSelected) Primary.copy(alpha = 0.05f) else Color.White, RoundedCornerShape(12.dp))
+            .background(if (isSelected) Primary.copy(alpha = 0.05f) else LightSurface, RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -623,14 +623,14 @@ private fun VehicleSelectionCard(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFF5F5F5), CircleShape),
+                    .background(LightSurfaceVariant, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(Icons.Outlined.LocalShipping, contentDescription = null, tint = LightTextSecondary)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                Text(text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = LightTextPrimary)
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (tag != null) {
@@ -660,7 +660,7 @@ private fun ConfirmDeleteDriverDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = Color.White,
+        containerColor = LightSurface,
         shape = RoundedCornerShape(16.dp),
         title = { 
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -66,6 +66,7 @@ import com.example.moveon.ui.theme.LightBorder
 import com.example.moveon.ui.theme.LightBorderLight
 import com.example.moveon.ui.theme.LightSurface
 import com.example.moveon.ui.theme.LightSurfaceVariant
+import com.example.moveon.ui.theme.LightTextPrimary
 import com.example.moveon.ui.theme.LightTextSecondary
 import com.example.moveon.ui.theme.Primary
 import com.example.moveon.util.Constants
@@ -156,7 +157,7 @@ fun LoginScreen(
                             .background(LightSurface),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Sign In", fontWeight = FontWeight.SemiBold)
+                        Text("Sign In", fontWeight = FontWeight.SemiBold, color = LightTextPrimary)
                     }
                     Box(
                         modifier = Modifier
@@ -289,11 +290,11 @@ private fun AuthField(
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(label, fontWeight = FontWeight.SemiBold)
+        Text(label, fontWeight = FontWeight.SemiBold, color = LightTextPrimary)
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder) },
+            placeholder = { Text(placeholder, color = LightTextSecondary) },
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
@@ -307,11 +308,12 @@ private fun AuthField(
                 disabledContainerColor = LightSurfaceVariant,
                 focusedIndicatorColor = LightBorder,
                 unfocusedIndicatorColor = LightBorder,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                disabledTextColor = Color.Black.copy(alpha = 0.5f),
-                focusedPlaceholderColor = Color.Black.copy(alpha = 0.6f),
-                unfocusedPlaceholderColor = Color.Black.copy(alpha = 0.6f)
+                focusedTextColor = LightTextPrimary,
+                unfocusedTextColor = LightTextPrimary,
+                disabledTextColor = LightTextSecondary,
+                focusedPlaceholderColor = LightTextSecondary,
+                unfocusedPlaceholderColor = LightTextSecondary,
+                cursorColor = Primary
             )
         )
     }

@@ -17,6 +17,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,13 +31,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.TextUnit
+import com.example.moveon.ui.theme.LightBackground
+import com.example.moveon.ui.theme.LightBorder
+import com.example.moveon.ui.theme.LightSurface
+import com.example.moveon.ui.theme.LightTextPrimary
+import com.example.moveon.ui.theme.LightTextSecondary
+import com.example.moveon.ui.theme.LocalAppDarkTheme
+import com.example.moveon.ui.theme.Primary
 
 @Composable
 fun MoveOnPillButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    background: Color = Color(0xFF1565C0),
+    background: Color = Primary,
     textColor: Color = Color.White,
     enabled: Boolean = true,
     textFontSize: TextUnit = 14.sp
@@ -67,9 +76,9 @@ fun MoveOnOutlinedPillButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    borderColor: Color = Color(0xFFE0E0E0),
-    background: Color = Color.White,
-    textColor: Color = Color(0xFF1C1B1F)
+    borderColor: Color = LightBorder,
+    background: Color = LightSurface,
+    textColor: Color = LightTextPrimary
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -88,12 +97,12 @@ fun MoveOnStatCard(
     value: String,
     label: String,
     modifier: Modifier = Modifier,
-    valueColor: Color = Color(0xFF1C1B1F)
+    valueColor: Color = LightTextPrimary
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
+        colors = CardDefaults.cardColors(containerColor = LightSurface),
+        border = BorderStroke(1.dp, LightBorder),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
@@ -118,7 +127,7 @@ fun MoveOnStatCard(
             Text(
                 text = label,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF757575),
+                color = LightTextSecondary,
                 maxLines = 1,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
@@ -129,6 +138,42 @@ fun MoveOnStatCard(
     }
 }
 
+/**
+ * Branded switch used across MoveOn surfaces. Off-state shows a white thumb on a
+ * neutral grey track so the control is clearly readable against light cards;
+ * on-state uses the primary brand colour.
+ */
+@Composable
+fun MoveOnSwitch(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    val isDark = LocalAppDarkTheme.current
+    val uncheckedTrack = if (isDark) Color(0xFF4A5568) else Color(0xFFBDBDBD)
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = modifier,
+        enabled = enabled,
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = Color.White,
+            checkedTrackColor = Primary,
+            checkedBorderColor = Color.Transparent,
+            uncheckedThumbColor = Color.White,
+            uncheckedTrackColor = uncheckedTrack,
+            uncheckedBorderColor = Color.Transparent,
+            disabledCheckedThumbColor = Color.White,
+            disabledCheckedTrackColor = Primary.copy(alpha = 0.5f),
+            disabledCheckedBorderColor = Color.Transparent,
+            disabledUncheckedThumbColor = Color.White,
+            disabledUncheckedTrackColor = uncheckedTrack.copy(alpha = 0.5f),
+            disabledUncheckedBorderColor = Color.Transparent
+        )
+    )
+}
+
 @Composable
 fun PlaceholderFutureScreen(
     title: String,
@@ -137,14 +182,14 @@ fun PlaceholderFutureScreen(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFFAFAFA)),
+            .background(LightBackground),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = "Implementing $title screen in future",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineSmall,
-            color = Color(0xFF1C1B1F)
+            color = LightTextPrimary
         )
     }
 }

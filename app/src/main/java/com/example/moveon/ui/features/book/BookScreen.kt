@@ -59,6 +59,8 @@ import com.example.moveon.ui.components.DashboardTab
 import com.example.moveon.ui.components.DualMarkerMapPreview
 import com.example.moveon.ui.components.LocationPickerField
 import com.example.moveon.ui.components.MoveOnBottomBar
+import com.example.moveon.ui.theme.AccentBorder
+import com.example.moveon.ui.theme.AccentSurface
 import com.example.moveon.ui.theme.Error
 import com.example.moveon.ui.theme.LightBackground
 import com.example.moveon.ui.theme.LightBorder
@@ -296,9 +298,9 @@ fun BookScreen(
                                 // Price Summary
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFDDECF9)),
+                                    colors = CardDefaults.cardColors(containerColor = AccentSurface),
                                     shape = RoundedCornerShape(16.dp),
-                                    border = BorderStroke(1.dp, Color(0xFF9FC4E9))
+                                    border = BorderStroke(1.dp, AccentBorder)
                                 ) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth().padding(14.dp),
@@ -308,7 +310,7 @@ fun BookScreen(
                                         PriceRow(label = "Base Rate (${selectedService?.title ?: "Vehicle"})", value = formatPkr(pricing.baseRate))
                                         PriceRow(label = "Estimated Duration", value = formatPkr(pricing.distanceCharge))
                                         PriceRow(label = "Service Fee", value = formatPkr(pricing.serviceFee))
-                                        HorizontalDivider(color = Color(0xFF9FC4E9))
+                                        HorizontalDivider(color = AccentBorder)
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.SpaceBetween,

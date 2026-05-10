@@ -95,7 +95,7 @@ fun ProviderBookingRequestDetailScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(LightSurface)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -453,7 +453,7 @@ fun ProviderTripDetailsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(LightSurface)
                     .padding(16.dp)
             ) {
                 if (trip.status == "In Transit") {
@@ -504,7 +504,7 @@ fun ProviderTripDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
+                    colors = CardDefaults.cardColors(containerColor = LightSurface.copy(alpha = 0.95f)),
                     border = BorderStroke(1.dp, LightBorder),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -530,7 +530,7 @@ fun ProviderTripDetailsScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(30.dp)
-                                        .background(Color.White, CircleShape)
+                                        .background(LightSurface, CircleShape)
                                         .border(1.dp, LightBorder, CircleShape)
                                         .clickable(onClick = onClose),
                                     contentAlignment = Alignment.Center
@@ -630,7 +630,7 @@ fun ProviderTripDetailsScreen(
     if (showOtpDialog) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showOtpDialog = false },
-            containerColor = Color.White,
+            containerColor = LightSurface,
             shape = RoundedCornerShape(16.dp),
             title = {
                 Text("Verify Completion", fontWeight = FontWeight.Bold, color = LightTextPrimary)
@@ -664,8 +664,8 @@ fun ProviderTripDetailsScreen(
                             focusedBorderColor = LightBorder,
                             unfocusedBorderColor = LightBorder,
                             errorBorderColor = Accent,
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
+                            focusedContainerColor = LightSurface,
+                            unfocusedContainerColor = LightSurface,
                             errorSupportingTextColor = Accent
                         )
                     )

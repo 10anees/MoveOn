@@ -43,7 +43,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -67,6 +66,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.moveon.ui.components.MoveOnPillButton
+import com.example.moveon.ui.components.MoveOnSwitch
 import com.example.moveon.ui.components.ObjectDetectionOverlayView
 import com.example.moveon.ui.theme.LightBorder
 import com.example.moveon.ui.theme.LightSurface
@@ -477,14 +477,14 @@ fun AddItemDialog(
     }
     var description by remember(initialDescription) { mutableStateOf(initialDescription) }
     var isFragile by remember(initialIsFragile) { mutableStateOf(initialIsFragile) }
-    val modalTextColor = Color.Black
-    val modalHintColor = Color(0xFF424242)
+    val modalTextColor = LightTextPrimary
+    val modalHintColor = LightTextSecondary
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = LightSurface),
             border = BorderStroke(1.dp, LightBorder)
         ) {
             Column(
@@ -617,7 +617,7 @@ fun AddItemDialog(
                                     color = modalHintColor
                                 )
                             }
-                            Switch(
+                            MoveOnSwitch(
                                 checked = isFragile,
                                 onCheckedChange = { isFragile = it }
                             )

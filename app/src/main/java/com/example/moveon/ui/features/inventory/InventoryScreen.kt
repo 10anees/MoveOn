@@ -1729,7 +1729,9 @@ private fun QrActionButton(
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
-            color = LightTextPrimary
+            color = LightTextPrimary,
+            maxLines = 1,
+            softWrap = false
         )
     }
 }
