@@ -22,11 +22,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.Button
@@ -37,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.moveon.ui.components.AdminDashboardTab
 import com.example.moveon.ui.components.DashboardTab
+import com.example.moveon.ui.components.MoveOnSwitch
 import com.example.moveon.ui.components.ProviderDashboardTab
 import com.example.moveon.ui.components.SettingsChromeBottomBar
 import com.example.moveon.ui.theme.LightBackground
@@ -140,8 +142,16 @@ fun AppSettingsScreen(
                 AppSettingToggleRow("Share Live Location", "Allow drivers to see your location", Icons.Outlined.LocationOn, state.shareLiveLocationEnabled, viewModel::setShareLiveLocationEnabled)
             }
 
-            AppSettingSectionTitle("App Preferences", Icons.Outlined.Sync)
+            AppSettingSectionTitle("App Preferences", Icons.Outlined.Palette)
             AppSettingCard {
+                AppSettingToggleRow(
+                    title = "Dark Mode",
+                    subtitle = "Switch the entire app to a dark color palette",
+                    icon = Icons.Outlined.DarkMode,
+                    checked = state.darkModeEnabled,
+                    onCheckedChange = viewModel::setDarkModeEnabled
+                )
+                AppSettingDivider()
                 AppSettingToggleRow("Auto Sync", "Sync data when online", Icons.Outlined.Sync, state.autoSyncEnabled, viewModel::setAutoSyncEnabled)
             }
 
@@ -243,7 +253,7 @@ private fun AppSettingToggleRow(title: String, subtitle: String, icon: androidx.
             Text(title, style = MaterialTheme.typography.titleMedium, color = LightTextPrimary, fontWeight = FontWeight.SemiBold)
             Text(subtitle, style = MaterialTheme.typography.bodySmall, color = LightTextSecondary)
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        MoveOnSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 

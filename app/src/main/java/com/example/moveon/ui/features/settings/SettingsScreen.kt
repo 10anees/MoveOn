@@ -42,7 +42,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,6 +63,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.moveon.ui.components.AdminDashboardTab
 import com.example.moveon.ui.components.DashboardTab
 import com.example.moveon.ui.components.MoveOnOutlinedPillButton
+import com.example.moveon.ui.components.MoveOnSwitch
 import com.example.moveon.ui.components.ProviderDashboardTab
 import com.example.moveon.ui.components.SettingsChromeBottomBar
 import com.example.moveon.ui.theme.LightBackground
@@ -711,7 +711,7 @@ private fun SettingToggleRow(
             )
         }
 
-        Switch(
+        MoveOnSwitch(
             checked = checked,
             onCheckedChange = onCheckedChange
         )

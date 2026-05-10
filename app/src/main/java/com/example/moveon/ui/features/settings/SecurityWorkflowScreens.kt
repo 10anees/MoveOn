@@ -328,9 +328,9 @@ private fun PasswordField(
             singleLine = true,
             visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF5F5F5),
-                unfocusedContainerColor = Color(0xFFF5F5F5),
-                disabledContainerColor = Color(0xFFF5F5F5),
+                focusedContainerColor = LightSurfaceVariant,
+                unfocusedContainerColor = LightSurfaceVariant,
+                disabledContainerColor = LightSurfaceVariant,
                 focusedTextColor = LightTextPrimary,
                 unfocusedTextColor = LightTextPrimary,
                 disabledTextColor = LightTextPrimary.copy(alpha = 0.6f),
