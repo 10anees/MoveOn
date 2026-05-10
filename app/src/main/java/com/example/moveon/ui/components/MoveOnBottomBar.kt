@@ -27,6 +27,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.moveon.ui.theme.LightBorder
+import com.example.moveon.ui.theme.LightSurface
+import com.example.moveon.ui.theme.LightTextSecondary
+import com.example.moveon.ui.theme.Primary
 
 enum class DashboardTab(
     val label: String,
@@ -49,9 +53,9 @@ fun MoveOnBottomBar(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .background(Color.White)
+            .background(LightSurface)
     ) {
-        HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+        HorizontalDivider(color = LightBorder, thickness = 1.dp)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,7 +65,7 @@ fun MoveOnBottomBar(
         ) {
             DashboardTab.entries.forEach { tab ->
                 val selected = tab == selectedTab
-                val color = if (selected) Color(0xFF1565C0) else Color(0xFF757575)
+                val color = if (selected) Primary else LightTextSecondary
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,7 +92,7 @@ fun MoveOnBottomBar(
                             modifier = Modifier
                                 .padding(top = 3.dp)
                                 .size(4.dp)
-                                .background(Color(0xFF1565C0), CircleShape)
+                                .background(Primary, CircleShape)
                         )
                     }
                 }
