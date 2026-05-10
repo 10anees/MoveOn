@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.EditLocationAlt
+import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Place
@@ -44,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -67,8 +69,10 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.google.maps.android.compose.Polyline
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -642,6 +646,47 @@ fun DualMarkerMapPreview(
 }
 
 /**
+ * Custom branded marker rendered at the provider's live location on a Google
+ * Map. Uses [MarkerComposable] so we can place an arbitrary Compose tree
+ * (a circular Primary-coloured badge containing a white shipping/truck icon)
+ * on the map instead of the default red pin.
+ *
+ * The marker's position is updated whenever the provider's live coordinates
+ * stream in from the Realtime Database.
+ */
+@com.google.maps.android.compose.GoogleMapComposable
+@Composable
+private fun ProviderVehicleMarker(position: LatLng) {
+    val markerState = rememberMarkerState(position = position)
+    LaunchedEffect(position) {
+        markerState.position = position
+    }
+    MarkerComposable(
+        "provider-vehicle",
+        state = markerState,
+        title = "Provider",
+        snippet = "Live location",
+        anchor = androidx.compose.ui.geometry.Offset(0.5f, 0.5f)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .background(Color.White, CircleShape)
+                .padding(3.dp)
+                .background(Primary, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.LocalShipping,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+    }
+}
+
+/**
  * Live tracking map that shows pickup, dropoff and a moving vehicle marker.
  */
 @Composable
@@ -726,12 +771,11 @@ fun LiveTrackingMap(
                     width = 6f
                 )
 
-                // Vehicle marker (moving)
+                // Provider vehicle marker (live, moving). Uses a custom
+                // branded icon so the customer can immediately distinguish it
+                // from the pickup/drop-off pins.
                 if (vehiclePosition != null) {
-                    Marker(
-                        state = MarkerState(position = vehiclePosition),
-                        title = "Vehicle"
-                    )
+                    ProviderVehicleMarker(position = vehiclePosition)
                 }
             }
 

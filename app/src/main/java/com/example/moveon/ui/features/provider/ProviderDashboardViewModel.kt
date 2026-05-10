@@ -39,8 +39,6 @@ class ProviderDashboardViewModel @Inject constructor(
 
     private var bookingsListenerJob: Job? = null
     private var tripLocationJob: Job? = null
-    private var lastPublishedLocation: LatLng? = null
-    private var lastPublishedAt: Long = 0L
 
     fun acceptBooking(bookingId: String, onComplete: (Boolean, String?) -> Unit = { _, _ -> }) {
         val request = _state.value.newRequests.firstOrNull { it.bookingId == bookingId }
@@ -158,22 +156,9 @@ class ProviderDashboardViewModel @Inject constructor(
         val nowMs = System.currentTimeMillis()
         Log.d("PublishLocation", "[IDS] BookingId=$bookingId, ProviderId=$providerId, UserId=$userId")
 
-        val newPoint = LatLng(lat, lng)
-        val lastPoint = lastPublishedLocation
-        val movedKm = if (lastPoint != null) {
-            LocationUtils.calculateDistanceKm(lastPoint, newPoint)
-        } else {
-            Double.MAX_VALUE
-        }
-
-        val elapsedMs = nowMs - lastPublishedAt
-        val shouldPublish = lastPoint == null || elapsedMs >= 10_000L || movedKm >= 0.02
-        Log.d("PublishLocation", "[THROTTLE] LastPoint=$lastPoint, ElapsedMs=$elapsedMs, MovedKm=$movedKm, ShouldPublish=$shouldPublish")
-        if (!shouldPublish) {
-            Log.d("PublishLocation", "[THROTTLED] Skipping publish due to throttle")
-            return
-        }
-
+        // Cadence is enforced by the caller's polling loop (every 5s while a booking is active).
+        // We publish on every tick so the customer always sees a fresh provider location, even
+        // when the provider isn't moving.
         viewModelScope.launch {
             Log.d("PublishLocation", "[ASYNC_START] Launching repository call for booking $bookingId")
             runCatching {
@@ -188,12 +173,10 @@ class ProviderDashboardViewModel @Inject constructor(
                     vehicleId = snapshot.activeTrackingVehicleId,
                     timestamp = nowMs
                 )
-                Log.d("PublishLocation", "[PUBLISHED] Successfully published location for booking $bookingId")
+                Log.d("PublishLocation", "[PUBLISHED] Successfully published location for booking $bookingId at $nowMs")
             }.onFailure { error ->
                 Log.e("PublishLocation", "[PUBLISH_ERROR] Failed to publish location: ${error.message}", error)
             }
-            lastPublishedLocation = newPoint
-            lastPublishedAt = nowMs
         }
     }
 
