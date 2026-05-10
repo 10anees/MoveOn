@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.moveon.util.LocationPermissionHandler
@@ -140,7 +142,8 @@ fun ProviderDashboardScreen(
                     } else {
                         Log.w("ProviderLocationLoop", "[NO_LOCATION_$loopCount] getCurrentLocation returned null")
                     }
-                    delay(8_000)
+                    // Publish cadence: every 5 seconds while a booking is active.
+                    delay(5_000)
                 } catch (e: Exception) {
                     Log.e("ProviderLocationLoop", "[LOOP_ERROR] Exception in location polling loop", e)
                     break
@@ -549,8 +552,17 @@ private fun NewRequestCard(
 
             HorizontalDivider(color = LightBorder)
 
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.WarningAmber,
                         contentDescription = null,
@@ -560,13 +572,23 @@ private fun NewRequestCard(
                     Text(
                         text = "Assign a vehicle & driver to accept",
                         color = LightTextSecondary,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                // Accept button
-                Button(onClick = { onAccept(request.bookingId) }) {
-                    Text("Accept")
+                Button(
+                    onClick = { onAccept(request.bookingId) },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text(
+                        text = "Accept",
+                        maxLines = 1,
+                        softWrap = false
+                    )
                 }
             }
         }
