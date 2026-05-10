@@ -43,7 +43,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,6 +62,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.moveon.domain.model.Booking
 import com.example.moveon.domain.model.BookingStatus
 import com.example.moveon.domain.model.SavedAddress
@@ -71,7 +71,6 @@ import com.example.moveon.domain.repository.LogisticsRepository
 import com.example.moveon.domain.repository.SavedAddressRepository
 import com.example.moveon.ui.components.DashboardTab
 import com.example.moveon.ui.components.MoveOnBottomBar
-import com.example.moveon.ui.components.MapPickerDialog
 import com.example.moveon.ui.components.MoveOnPillButton
 import com.example.moveon.ui.components.ProviderBottomBar
 import com.example.moveon.ui.components.ProviderDashboardTab
@@ -486,9 +485,9 @@ private fun ProfileField(
                 { Text(error, color = ErrorDeep) }
             },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF5F5F5),
-                unfocusedContainerColor = Color(0xFFF5F5F5),
-                disabledContainerColor = Color(0xFFF5F5F5),
+                focusedContainerColor = LightSurfaceVariant,
+                unfocusedContainerColor = LightSurfaceVariant,
+                disabledContainerColor = LightSurfaceVariant,
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
                 disabledBorderColor = Color.Transparent,
@@ -532,7 +531,7 @@ private fun SavedAddressCard(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(Color(0xFFF5F5F5), CircleShape),
+                    .background(LightSurfaceVariant, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -581,7 +580,7 @@ private fun SmallPillButton(
     Box(
         modifier = Modifier
             .height(32.dp)
-            .background(Color(0xFFFAFAFA), RoundedCornerShape(10.dp))
+            .background(LightSurfaceVariant, RoundedCornerShape(10.dp))
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.Center
@@ -664,7 +663,6 @@ private fun AddEditAddressDialog(
     var city by rememberSaveable(initial?.city) { mutableStateOf(initial?.city.orEmpty()) }
     var lat by rememberSaveable(initial?.lat) { mutableStateOf(initial?.lat) }
     var lng by rememberSaveable(initial?.lng) { mutableStateOf(initial?.lng) }
-    var showMap by rememberSaveable { mutableStateOf(false) }
 
     val labelError = if (label.isBlank()) "Label is required" else null
     val line1Error = if (line1.isBlank()) "Address line 1 is required" else null
@@ -672,42 +670,115 @@ private fun AddEditAddressDialog(
     val pinError = if (lat == null || lng == null) "Pin location is required" else null
     val canSave = labelError == null && line1Error == null && cityError == null && pinError == null
 
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = LightSurface),
-            shape = RoundedCornerShape(16.dp),
-            border = BorderStroke(1.dp, LightBorder)
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnBackPress = true,
+            dismissOnClickOutside = false
+        )
+    ) {
+        androidx.compose.material3.Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = LightBackground
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .fillMaxSize()
+                    .statusBarsPadding()
             ) {
-                Text(
-                    text = if (initial == null) "Add Address" else "Edit Address",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = LightTextPrimary
+                AddAddressHeader(
+                    title = if (initial == null) "Add Address" else "Edit Address",
+                    onClose = onDismiss
                 )
 
-                ProfileField(label = "Label", value = label, onValueChange = { label = it }, leadingIcon = Icons.Outlined.Edit, error = labelError)
-                ProfileField(label = "Address Line 1", value = line1, onValueChange = { line1 = it }, leadingIcon = Icons.Outlined.LocationOn, error = line1Error)
-                ProfileField(label = "Address Line 2", value = line2, onValueChange = { line2 = it }, leadingIcon = Icons.Outlined.LocationOn, error = null)
-                ProfileField(label = "City", value = city, onValueChange = { city = it }, leadingIcon = Icons.Outlined.LocationOn, error = cityError)
+                AddressPinMap(
+                    initialLat = initial?.lat,
+                    initialLng = initial?.lng,
+                    onCenterChanged = { newLat, newLng ->
+                        lat = newLat
+                        lng = newLng
+                    }
+                )
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Pin Location *", style = MaterialTheme.typography.labelLarge, color = LightTextPrimary, fontWeight = FontWeight.SemiBold)
-                    TextButton(onClick = { showMap = true }) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    val pinLat = lat
+                    val pinLng = lng
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.LocationOn,
+                            contentDescription = null,
+                            tint = if (pinLat != null && pinLng != null) Primary else LightTextSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Text(
-                            text = if (lat == null || lng == null) "Select on map" else "Change pin (${String.format("%.4f", lat)}, ${String.format("%.4f", lng)})",
-                            color = Primary
+                            text = if (pinLat != null && pinLng != null) {
+                                "Pin: " +
+                                    String.format(Locale.US, "%.5f", pinLat) + ", " +
+                                    String.format(Locale.US, "%.5f", pinLng)
+                            } else {
+                                "Drag the map to position the pin"
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = LightTextSecondary
                         )
                     }
-                    pinError?.let { Text(it, color = ErrorDeep, style = MaterialTheme.typography.bodySmall) }
+
+                    ProfileField(
+                        label = "Label",
+                        value = label,
+                        onValueChange = { label = it },
+                        leadingIcon = Icons.Outlined.Edit,
+                        error = labelError
+                    )
+                    ProfileField(
+                        label = "Address Line 1",
+                        value = line1,
+                        onValueChange = { line1 = it },
+                        leadingIcon = Icons.Outlined.LocationOn,
+                        error = line1Error
+                    )
+                    ProfileField(
+                        label = "Address Line 2",
+                        value = line2,
+                        onValueChange = { line2 = it },
+                        leadingIcon = Icons.Outlined.LocationOn,
+                        error = null
+                    )
+                    ProfileField(
+                        label = "City",
+                        value = city,
+                        onValueChange = { city = it },
+                        leadingIcon = Icons.Outlined.LocationOn,
+                        error = cityError
+                    )
+
+                    pinError?.let {
+                        Text(
+                            text = it,
+                            color = ErrorDeep,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LightSurface)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Button(
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f).height(44.dp),
@@ -737,7 +808,10 @@ private fun AddEditAddressDialog(
                         enabled = canSave,
                         modifier = Modifier.weight(1f).height(44.dp),
                         shape = RoundedCornerShape(22.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Primary,
+                            disabledContainerColor = Primary.copy(alpha = 0.45f)
+                        )
                     ) {
                         Text("Save", color = Color.White, fontWeight = FontWeight.SemiBold)
                     }
@@ -745,19 +819,115 @@ private fun AddEditAddressDialog(
             }
         }
     }
+}
 
-    if (showMap) {
-        MapPickerDialog(
-            initialLat = lat ?: 31.5204,
-            initialLng = lng ?: 74.3587,
-            onLocationPicked = { pickedLat, pickedLng, _ ->
-                // IMPORTANT: pin selection does NOT populate address lines
-                lat = pickedLat
-                lng = pickedLng
-                showMap = false
-            },
-            onDismiss = { showMap = false }
+@Composable
+private fun AddAddressHeader(title: String, onClose: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall,
+            color = LightTextPrimary,
+            fontWeight = FontWeight.SemiBold
         )
+        IconButton(onClick = onClose) {
+            Icon(
+                imageVector = Icons.Outlined.Close,
+                contentDescription = "Close",
+                tint = LightTextSecondary
+            )
+        }
+    }
+}
+
+@Composable
+private fun AddressPinMap(
+    initialLat: Double?,
+    initialLng: Double?,
+    onCenterChanged: (Double, Double) -> Unit
+) {
+    val seedLat = initialLat ?: 31.5204
+    val seedLng = initialLng ?: 74.3587
+    val cameraPositionState = com.google.maps.android.compose.rememberCameraPositionState {
+        position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(
+            com.google.android.gms.maps.model.LatLng(seedLat, seedLng),
+            15f
+        )
+    }
+
+    // Seed the parent's lat/lng on first composition so the pin is "set" even
+    // if the user never pans (defaults to the existing address or Lahore).
+    LaunchedEffect(Unit) {
+        val target = cameraPositionState.position.target
+        onCenterChanged(target.latitude, target.longitude)
+    }
+
+    // Whenever the camera comes to rest after movement, treat its centre as the
+    // new pin location. This is the "drag map → centre is the pin" behaviour.
+    LaunchedEffect(cameraPositionState.isMoving) {
+        if (!cameraPositionState.isMoving) {
+            val target = cameraPositionState.position.target
+            onCenterChanged(target.latitude, target.longitude)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp)
+    ) {
+        com.google.maps.android.compose.GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = com.google.maps.android.compose.MapProperties(
+                mapType = com.google.maps.android.compose.MapType.NORMAL
+            ),
+            uiSettings = com.google.maps.android.compose.MapUiSettings(
+                zoomControlsEnabled = false,
+                compassEnabled = true,
+                mapToolbarEnabled = false,
+                scrollGesturesEnabled = true,
+                zoomGesturesEnabled = true,
+                tiltGesturesEnabled = false,
+                rotationGesturesEnabled = false,
+                scrollGesturesEnabledDuringRotateOrZoom = true
+            )
+        )
+
+        // Centre crosshair pin overlay — the "real" pin is wherever the map is
+        // dragged so its centre lands.
+        Box(
+            modifier = Modifier.align(Alignment.Center),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.LocationOn,
+                contentDescription = "Pin location",
+                tint = Primary,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        // Hint chip
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 12.dp)
+                .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(20.dp))
+                .padding(horizontal = 14.dp, vertical = 6.dp)
+        ) {
+            Text(
+                text = "Drag the map to set the pin",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White
+            )
+        }
     }
 }
 
@@ -856,7 +1026,7 @@ private fun AddressRow(title: String, address: String, filledDot: Boolean) {
                 .padding(top = 6.dp)
                 .size(8.dp)
                 .background(dotColor, CircleShape)
-                .let { m -> if (border == null) m else m.background(Color.White, CircleShape) }
+                .let { m -> if (border == null) m else m.background(LightSurface, CircleShape) }
         )
 
         Column(modifier = Modifier.weight(1f)) {
@@ -883,7 +1053,7 @@ private fun OutlinePillAction(
     Box(
         modifier = modifier
             .height(32.dp)
-            .background(Color(0xFFFAFAFA), RoundedCornerShape(20.dp))
+            .background(LightSurfaceVariant, RoundedCornerShape(20.dp))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
