@@ -2,6 +2,9 @@ package com.example.moveon.data.local.dao
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -11,6 +14,11 @@ class UserPreferencesImpl @Inject constructor(
 ) : UserPreferences {
 
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    private val _darkModeFlow = MutableStateFlow(
+        prefs.getBoolean(KEY_DARK_MODE_ENABLED, false)
+    )
+    override val darkModeFlow: StateFlow<Boolean> = _darkModeFlow.asStateFlow()
 
     override suspend fun setRememberMeEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_REMEMBER_ME_ENABLED, enabled).apply()
@@ -62,10 +70,11 @@ class UserPreferencesImpl @Inject constructor(
 
     override suspend fun setDarkModeEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(KEY_DARK_MODE_ENABLED, enabled).apply()
+        _darkModeFlow.value = enabled
     }
 
     override suspend fun isDarkModeEnabled(): Boolean {
-        return prefs.getBoolean(KEY_DARK_MODE_ENABLED, false)
+        return _darkModeFlow.value
     }
 
     override suspend fun setAutoSyncEnabled(enabled: Boolean) {

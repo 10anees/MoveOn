@@ -42,6 +42,7 @@ class SettingsViewModel @Inject constructor(
     init {
         loadSettings()
         observeCurrentUserRole()
+        observeDarkModePreference()
     }
 
     private fun observeCurrentUserRole() {
@@ -50,6 +51,21 @@ class SettingsViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     currentUserRole = user?.role
                 )
+            }
+        }
+    }
+
+    /**
+     * Keep the local UI state in sync with the persisted dark-mode preference.
+     * The shared `userPreferences.darkModeFlow` is the single source of truth so
+     * that the settings toggle and the global `MoveOnTheme` can never diverge.
+     */
+    private fun observeDarkModePreference() {
+        viewModelScope.launch {
+            userPreferences.darkModeFlow.collect { enabled ->
+                if (_uiState.value.darkModeEnabled != enabled) {
+                    _uiState.value = _uiState.value.copy(darkModeEnabled = enabled)
+                }
             }
         }
     }

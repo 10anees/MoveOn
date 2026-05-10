@@ -83,7 +83,9 @@ import com.example.moveon.ui.features.settings.NewPasswordScreen
 import com.example.moveon.ui.features.settings.VerifyIdentityScreen
 import com.example.moveon.ui.features.settings.PasswordUpdateViewModel
 import com.example.moveon.ui.features.splash.SplashScreen
+import com.example.moveon.ui.theme.AppThemeViewModel
 import com.example.moveon.ui.theme.MoveOnTheme
+import androidx.compose.runtime.collectAsState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -95,7 +97,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MoveOnTheme {
+            val themeViewModel: AppThemeViewModel = hiltViewModel()
+            val isDarkMode by themeViewModel.darkModeEnabled.collectAsState()
+            MoveOnTheme(darkTheme = isDarkMode) {
                 val navController = rememberNavController()
                 val authFlowViewModel: AuthFlowViewModel = viewModel()
 
@@ -371,7 +375,7 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)
                                         .padding(16.dp)
-                                        .background(Color.White, RoundedCornerShape(12.dp))
+                                        .background(com.example.moveon.ui.theme.LightSurface, RoundedCornerShape(12.dp))
                                         .padding(horizontal = 12.dp, vertical = 8.dp)
                                 ) {
                                     Text((authState as AuthViewModel.AuthState.Error).message)
@@ -827,7 +831,7 @@ private fun BottomTabPlaceholderScreen(
     onTabSelected: (DashboardTab) -> Unit
 ) {
     Scaffold(
-        containerColor = Color(0xFFFAFAFA),
+        containerColor = com.example.moveon.ui.theme.LightBackground,
         bottomBar = {
             MoveOnBottomBar(selectedTab = selectedTab, onTabSelected = onTabSelected)
         }
