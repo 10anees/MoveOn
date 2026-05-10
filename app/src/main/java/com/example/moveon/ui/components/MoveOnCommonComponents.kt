@@ -108,12 +108,22 @@ fun MoveOnStatCard(
                 fontSize = 40.sp,
                 lineHeight = 42.sp,
                 color = valueColor,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
             Text(
                 text = label,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF757575)
+                color = Color(0xFF757575),
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

@@ -22,7 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Email
@@ -141,10 +140,8 @@ fun AppSettingsScreen(
                 AppSettingToggleRow("Share Live Location", "Allow drivers to see your location", Icons.Outlined.LocationOn, state.shareLiveLocationEnabled, viewModel::setShareLiveLocationEnabled)
             }
 
-            AppSettingSectionTitle("App Preferences", Icons.Outlined.DarkMode)
+            AppSettingSectionTitle("App Preferences", Icons.Outlined.Sync)
             AppSettingCard {
-                AppSettingToggleRow("Dark Mode", "Switch to dark theme", Icons.Outlined.DarkMode, state.darkModeEnabled, viewModel::setDarkModeEnabled)
-                AppSettingDivider()
                 AppSettingToggleRow("Auto Sync", "Sync data when online", Icons.Outlined.Sync, state.autoSyncEnabled, viewModel::setAutoSyncEnabled)
             }
 

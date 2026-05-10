@@ -38,7 +38,6 @@ import com.example.moveon.ui.theme.LightBackground
 import com.example.moveon.ui.theme.LightBorder
 import com.example.moveon.ui.theme.LightSurface
 import com.example.moveon.ui.theme.LightTextSecondary
-import com.example.moveon.ui.theme.Success
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -90,12 +89,6 @@ fun AdminProfileTab(
                 value = state.providers.size.toString(),
                 label = "Providers",
                 modifier = Modifier.weight(1f)
-            )
-            MoveOnStatCard(
-                value = "Admin",
-                label = "Role",
-                modifier = Modifier.weight(1f),
-                valueColor = Success
             )
         }
 
