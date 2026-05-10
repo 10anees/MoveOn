@@ -48,6 +48,7 @@ import com.example.moveon.domain.model.Provider
 import com.example.moveon.ui.components.LiveTrackingMap
 import com.example.moveon.ui.theme.LightBorder
 import com.example.moveon.ui.theme.LightSurface
+import com.example.moveon.ui.theme.LightSurfaceVariant
 import com.example.moveon.ui.theme.LightTextPrimary
 import com.example.moveon.ui.theme.LightTextSecondary
 import com.example.moveon.ui.theme.Primary
@@ -70,8 +71,29 @@ fun TripDetailsContent(
 ) {
     val context = LocalContext.current
     val scheduleLabel = formatEpochToTime(booking.scheduledTime)
+
+    // Fall back to a great-circle distance between pickup/drop-off if the
+    // booking flow didn't carry the user-entered distance (e.g. when this card
+    // is rendered from a resumed session for an already-created booking).
+    val effectiveDistanceKm = remember(
+        distanceKmText,
+        booking.pickupLat, booking.pickupLng,
+        booking.dropOffLat, booking.dropOffLng
+    ) {
+        distanceKmText.toDoubleOrNull()?.takeIf { it > 0.0 }
+            ?: if (booking.pickupLat != 0.0 && booking.dropOffLat != 0.0) {
+                LocationUtils.calculateDistanceKm(
+                    LatLng(booking.pickupLat, booking.pickupLng),
+                    LatLng(booking.dropOffLat, booking.dropOffLng)
+                ).takeIf { it > 0.0 }
+            } else null
+    }
+    val effectiveDistanceText = effectiveDistanceKm?.let {
+        String.format(Locale.US, "%.1f", it)
+    } ?: ""
+
     val completionLabel = formatEpochToTime(
-        booking.scheduledTime + estimateDurationMinutes(distanceKmText) * 60_000L
+        booking.scheduledTime + estimateDurationMinutes(effectiveDistanceText) * 60_000L
     )
     val providerName = provider?.establishmentName?.ifBlank { "Assigned Provider" } ?: "Assigned Provider"
     val providerInitials = providerName.split(" ")
@@ -338,7 +360,7 @@ fun TripDetailsContent(
         rows = listOf(
             "Start Time" to scheduleLabel,
             "Est. Completion" to (completionAtLabel ?: completionLabel),
-            "Total Distance" to "${distanceKmText.ifBlank { "-" }} km"
+            "Total Distance" to if (effectiveDistanceText.isNotBlank()) "$effectiveDistanceText km" else "—"
         )
     )
 
@@ -360,7 +382,7 @@ private fun TripDetailsCircleIconButton(
     Box(
         modifier = Modifier
             .size(34.dp)
-            .background(Color(0xFFF5F5F5), CircleShape)
+            .background(LightSurfaceVariant, CircleShape)
             .border(1.dp, LightBorder, CircleShape)
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center
