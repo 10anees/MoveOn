@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.moveon.ui.components.ProviderRoutePoint
@@ -165,7 +167,12 @@ private fun PendingRequestCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.WarningAmber,
                         contentDescription = null,
@@ -176,13 +183,23 @@ private fun PendingRequestCard(
                         text = "Assign a vehicle & driver to accept",
                         color = LightTextSecondary,
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                // Accept button
-                Button(onClick = onAccept) {
-                    Text("Accept")
+                Button(
+                    onClick = onAccept,
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text(
+                        text = "Accept",
+                        maxLines = 1,
+                        softWrap = false
+                    )
                 }
             }
         }
